@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    container_name: welearnsec-bank
+    ports:
+      - "8088:80"
+    volumes:
+      - ./welearnsec-bank:/var/www/html
+    depends_on:
+      - db
+
+  db:
+    image: mariadb:10.5
+    container_name: welearnsecbank-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass
+      MYSQL_DATABASE: welearnsecbank
+      MYSQL_USER: welearnsec
+      MYSQL_PASSWORD: welearnsecpass
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./welearnsec-bank/db/db.sql:/docker-entrypoint-initdb.d/db.sql
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: welearnsecbank-pma
+    restart: always
+    ports:
+      - "8089:80"
+    environment:
+      PMA_HOST: db
+      MYSQL_ROOT_PASSWORD: rootpass
+
+volumes:
+  db_data:
